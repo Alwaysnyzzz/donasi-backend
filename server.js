@@ -43,7 +43,11 @@ async function writeTransactions(transactions) {
 
 // Endpoint root untuk tes
 app.get('/', (req, res) => {
+<<<<<<< HEAD
     res.send('Backend donasi berjalan!');
+=======
+    res.send('✅ Backend donasi berjalan!');
+>>>>>>> c6bfa16 (tambah endpoint cancel transaction)
 });
 
 // Endpoint create QRIS
@@ -118,6 +122,40 @@ app.get('/api/check-status/:orderId', async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
+=======
+// Endpoint cancel transaction
+app.post('/api/cancel-transaction', async (req, res) => {
+    const { orderId } = req.body;
+    if (!orderId) return res.status(400).json({ error: 'Missing orderId' });
+
+    try {
+        const response = await axios.post(
+            'https://app.pakasir.com/api/transactioncancel',
+            {
+                project: PROJECT_SLUG,
+                order_id: orderId,
+                api_key: API_KEY
+            },
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        // Update status di file JSON
+        const transactions = await readTransactions();
+        const transaction = transactions.find(t => t.id === orderId);
+        if (transaction) {
+            transaction.status = 'canceled';
+            await writeTransactions(transactions);
+        }
+
+        res.json({ success: true, data: response.data });
+    } catch (error) {
+        console.error('Cancel error:', error.response?.data || error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+>>>>>>> c6bfa16 (tambah endpoint cancel transaction)
 // Endpoint ambil detail transaksi (untuk halaman struk)
 app.get('/api/transaction/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
